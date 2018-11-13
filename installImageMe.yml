@@ -1,0 +1,28 @@
+---
+- hosts: imageme-hosts
+  become: yes
+  environment:
+    SEARCH_ENGINE_ID: "006879359584856769921:rplfy3clmho"
+    GOOGLE_CLOUD_API_KEY: "AIzaSyDLLC1pqOxkWA8jUjM-Cfwbl_13Sh_2t98"
+  tasks:
+    - name: Install git
+      yum:
+        name: git
+        state: latest
+    - name: Cloning imageMe repo
+      git:
+        repo: https://github.com/jkanclerz/google-search-python.git
+        dest: /bin/imageMe
+    - name: Saving environment variables to file
+      lineinfile:
+        dest: /etc/environment
+        line: "{{ item }}"
+      with_items:
+          - export SEARCH_ENGINE_ID=006879359584856769921:rplfy3clmho
+          - export GOOGLE_CLOUD_API_KEY=AIzaSyDLLC1pqOxkWA8jUjM-Cfwbl_13Sh_2t98
+    - name: Adding helper script
+      copy:
+        src: ./imageMe.sh
+        dest: /bin/imageMe
+        owner: ec2-user
+        mode: 0555
